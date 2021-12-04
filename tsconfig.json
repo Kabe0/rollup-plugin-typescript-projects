@@ -1,0 +1,23 @@
+{
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+//      "allowSyntheticDefaultImports": true,
+//      "esModuleInterop": true,
+      "lib": ["es6"],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "declaration": true,
+      "declarationMap": true,
+//      "noEmit": true,
+//      "noEmitOnError": false,
+//      "noUnusedLocals": true,
+//      "noUnusedParameters": true,
+//      "pretty": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2017",
+      "outDir": "./dist",
+      "rootDir": "./src"
+    },
+  "exclude": ["dist", "node_modules"]
+}

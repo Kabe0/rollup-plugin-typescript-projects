@@ -1,0 +1,22 @@
+{
+  "name": "Modernize",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "jest": "^27.3.1",
+    "ts-jest": "^27.0.7",
+    "rollup": "^2.59.0"
+  },
+  "peerDependencies": {
+    "typescript": "^4.4.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+
+  }
+}
