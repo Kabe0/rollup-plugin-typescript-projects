@@ -1,19 +1,21 @@
 {
-  "include": ["./src/**/*"],
+  "include": [
+    "./**/*",
+    "../src/**/*"
+  ],
   "compilerOptions": {
     "lib": [
       "es6"
     ],
-    "module": "CommonJS",
+    "module": "commonjs",
     "moduleResolution": "node",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "baseUrl": ".",
+    "rootDir": "../",
+    "baseUrl": "../",
     "paths": {
       "@plugin/*": ["src/*"],
       "@test/*": ["./test/*"]
