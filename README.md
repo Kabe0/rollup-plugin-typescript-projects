@@ -1,4 +1,4 @@
-# typescript-plugin
+# rollup-typescript-plugin-projects
 Early prototype plugin Typescript References for Rollup.
 
 ## Current Outstanding Issues:
@@ -19,8 +19,8 @@ To build this project you can run `yarn install`. You may run the following yarn
 
 If you want to link this project to your existing project, you can use `yarn link` which will create a symlink
 between the two projects. 
-1. Run `yarn link` inside the typescript-plugin project. This should create a message saying the project link and how to symlink
-2. Navigate to your other project, and run `yarn link typescript-plugin` which will link the project together.
+1. Run `yarn link` inside the rollup-typescript-plugin-projects project. This should create a message saying the project link and how to symlink
+2. Navigate to your other project, and run `yarn link rollup-typescript-plugin-projects` which will link the project together.
 3. Run the steps as desired in 'How to set up a project' to get the typescript package included.
 
 ## How to set up a project
@@ -28,7 +28,7 @@ You will need Rollup version 1.62.1 or later for this project to fully work as i
 
 The below example is a website ready configuration using ESM module loading.
 ```javascript
-import typescript from "typescript-plugin"
+import typescript from "rollup-typescript-plugin-projects"
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import commonjs from '@rollup/plugin-commonjs';
@@ -60,7 +60,7 @@ export default {
 If bundling is preferred, the module configuration can be turned into the following to make as a single bundled file.
 Please be aware that includeUnusedFiles cannot be turned on if a single output is specified.
 ```javascript
-import typescript from "typescript-plugin"
+import typescript from "rollup-typescript-plugin-projects"
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import commonjs from '@rollup/plugin-commonjs';
