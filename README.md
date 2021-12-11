@@ -1,6 +1,8 @@
 # rollup-typescript-plugin-projects
 Early prototype plugin Typescript References for Rollup.
 
+Will be pushed to NPM in the future once the project is considered stable enough.
+
 ## Current Outstanding Issues:
 - Errors are not captured gracefully.
 - Compiling Times are quite slow.
@@ -9,6 +11,7 @@ Early prototype plugin Typescript References for Rollup.
 - CWD is fixed to the folder rollup is run on.
 - includeUnusedFiles could be done per project, as of right now it's a global toggle.
   - It does not currently support a single file output. This is due to how rollup handles isolated chunks. Will need to look into this more.
+- No definition publishing controls
 
 ## How to build
 To build this project you can run `yarn install`. You may run the following yarn commands for this project
