@@ -4,7 +4,15 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "commonjs",
+  "author": {
+    "name": "Ian Carson"
+  },
+  "homepage": "https://github.com/Kabe0/rollup-plugin-typescript-projects",
+  "bugs": "https://github.com/Kabe0/rollup-plugin-typescript-projects/issues",
   "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
@@ -26,5 +34,16 @@
   },
   "dependencies": {
     "rollup": "^2.59.0"
-  }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "rollup",
+    "plugin",
+    "typescript",
+    "es2020",
+    "references"
+  ]
 }
