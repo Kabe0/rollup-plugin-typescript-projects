@@ -7,8 +7,9 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "declaration": true,
-    "declarationMap": true,
     "sourceMap": true,
+    "esModuleInterop": true,
+    "incremental": true,
     "strict": true,
     "target": "es2020",
     "outDir": "./dist",
@@ -19,5 +20,5 @@
       "@test/*": ["./test/*"]
     }
   },
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules"],
 }

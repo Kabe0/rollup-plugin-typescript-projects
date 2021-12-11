@@ -1,36 +1,26 @@
 import {
+    CompilerHost,
     CompilerOptions,
+    CreateProgram,
     Diagnostic,
     getOutputFileNames,
     InvalidatedProject,
     InvalidatedProjectKind,
     nodeModuleNameResolver,
+    ProjectReference,
     ResolvedModule,
     ResolvedProjectReference,
     SemanticDiagnosticsBuilderProgram,
     SolutionBuilderHostBase,
-    sys,
+    sys
 } from "typescript";
 
 import BuildMode from "./BuildMode";
 import FileRepositoryCache from "./File/FileRepositoryCache";
 import { ContextType, FileTypes } from "./File/Definitions";
 import { FileHelpers } from "./File/FileHelper";
+import SolutionBuilderConfigProcessor, { SolutionBuilderOptions } from "./SolutionBuilderConfigProcessor";
 
-interface SolutionBuilderOptions
-{
-    /**
-     * Triggered when SolutionBuilderPlugin starts building. Will also be called on each watch detection.
-     * @see SolutionBuilderPlugin.run
-     * @see SolutionBuilderPlugin.watch
-     */
-    onBuilderStarting?: (() => void),
-    /**
-     * Triggered when SolutionBuilderPlugin has completed building.
-     * @see SolutionBuilderPlugin.watch
-     */
-    onBuilderEnded?: (() => void)
-}
 
 /**
  * @see https://github.com/microsoft/TypeScript/blob/master/src/compiler/diagnosticMessages.json
@@ -54,9 +44,14 @@ export default class SolutionBuilderPlugin
     private _activeProject?: InvalidatedProject<any>;
 
     private readonly fileRepository: FileRepositoryCache;
-    private readonly options: SolutionBuilderOptions;
+    private readonly _options: SolutionBuilderOptions;
 
     //region Getters & Setters
+
+    public get options(): SolutionBuilderOptions
+    {
+        return this._options;
+    }
 
     public get buildMode(): BuildMode
     {
@@ -80,6 +75,11 @@ export default class SolutionBuilderPlugin
         this._activeProject = value;
     }
 
+    /**
+     * Should be called at the end of every project loop to ensure no additional calls happen after the {@see validateProjects}
+     * is done.
+     * @private
+     */
     private clearActiveProject()
     {
         this._activeProject = undefined;
@@ -93,7 +93,7 @@ export default class SolutionBuilderPlugin
     constructor( fileRepository: FileRepositoryCache, options: SolutionBuilderOptions )
     {
         this.fileRepository = fileRepository;
-        this.options = options;
+        this._options = SolutionBuilderConfigProcessor.Process( options );
     }
 
     //region Mode Setup methods
@@ -110,6 +110,12 @@ export default class SolutionBuilderPlugin
         host.fileExists = this.fileExists.bind( this );
         host.readFile = this.readFile.bind(this);
         host.writeFile = this.writeFile.bind( this );
+        let createProgram = host.createProgram;
+
+        //@ts-ignore
+        host.createProgram = (...args) => {
+            return this.createProgram( createProgram, ...args );
+        }
     }
 
     /**
@@ -124,6 +130,41 @@ export default class SolutionBuilderPlugin
     //endregion
 
     //region SolutionBuilder Watch Host Override Methods
+
+    /**
+     * TODO override the options here with user specific changes. I think it may be nice to have project specific
+     *  config overloading, so people can specify the config path they want to replace with whatever is passed into
+     *  rollup. Additionally, I should probably force specific flags on multi-projects so that people do not have to
+     *  worry about a rouge config breaking TypesScript.
+     *
+     * TODO rootNames is probably a better place to hook into and provide a verification within the project.
+     *  Will need to verify the behaviour on multi-projects and how it handles a non .ts file in the list.
+     * Used to extend and modify the program before the files are outputted.
+     * @param originalProgram
+     * @param rootNames
+     * @param options
+     * @param host
+     * @param oldProgram
+     * @param configFileParsingDiagnostics
+     * @param projectReferences
+     * @private
+     */
+    private createProgram( originalProgram: any,
+                           rootNames: (readonly string[] | undefined),
+                           options: (CompilerOptions | undefined),
+                           host?: CompilerHost,
+                           oldProgram?: any,
+                           configFileParsingDiagnostics?: readonly Diagnostic[],
+                           projectReferences?: (readonly ProjectReference[] | undefined)): CreateProgram<SemanticDiagnosticsBuilderProgram>
+    {
+        if ( this.options.compilerOptions ) options = { ...options, ...this.options.compilerOptions };
+
+        // Project configs override the compilerOptions.
+        let projectConfig = this.options.projects?.[FileHelpers.ResolveNormalize( this.activeProject.project as string )];
+        if ( projectConfig ) options = {...options, ...projectConfig };
+
+        return originalProgram( rootNames, options, host, oldProgram, configFileParsingDiagnostics, projectReferences );
+    }
 
     /**
      * Overridden to help the SolutionBuilder know if newly created file-folders exists.

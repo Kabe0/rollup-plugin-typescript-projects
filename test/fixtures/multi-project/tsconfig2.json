@@ -1,0 +1,22 @@
+{
+  "extends": "./config/typescript/tsconfig.base.json",
+  "include": [
+    "src/*"
+  ],
+  "compilerOptions": {
+    "module": "es2020",
+    "target": "es2020",
+    "strict": true,
+    "baseUrl": "./",
+    "rootDir": "./",
+    "outDir": "./build/"
+  },
+  "references": [
+    {
+      "path": "packages/package1"
+    },
+    {
+      "path": "packages/package2"
+    }
+  ]
+}

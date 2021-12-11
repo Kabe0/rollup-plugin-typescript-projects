@@ -8,6 +8,30 @@ let mainCwd = process.cwd();
 describe( "Test Basic Methods", () => {
     const multiProject:Fixture = fixtureLoader.get( "multi-project" ) as Fixture;
 
+    describe( "Project Specific Config Loading", () => {
+
+        test("Config Overloading Works as Expected", () => {
+            process.chdir( multiProject.path );
+            let solutionBuilderPlugin = new SolutionBuilderPlugin( new FileRepositoryCache(), {
+                onBuilderEnded: () => {},
+                onBuilderStarting: () => {},
+                compilerOptions: {
+                    allowJs: false
+                },
+                projects: {
+                    "./tsconfig2.json": {
+                        allowJs: true
+                    }
+                }
+            } );
+
+            expect( solutionBuilderPlugin ).toBeDefined();
+            expect( solutionBuilderPlugin.options.projects ).not.toHaveProperty("./tsconfig2.json");
+
+            process.chdir( mainCwd );
+        })
+    });
+
     describe( "Watch Mode", () => {
         /** {@see SolutionBuilderPlugin.watch} */
         test( "Constructs", () => {

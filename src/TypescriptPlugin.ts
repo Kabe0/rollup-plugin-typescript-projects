@@ -12,15 +12,24 @@ import { relative } from "path";
 import Watch from "./Watch";
 import FileRepositoryCache from "./File/FileRepositoryCache";
 import { FileHelpers } from "./File/FileHelper";
+import { ProjectOptions } from "./SolutionBuilderConfigProcessor";
 
 export interface TypescriptPluginOptions
 {
+    /**
+     * {@see ProjectOptions}
+     */
+    compilerOptions?: ProjectOptions,
+    /**
+     * {@see SolutionBuilderOptions.projects}
+     */
+    projects?: { [key: string]: ProjectOptions }
     /**
      * Can be toggled on to force all files to be loaded into the TypescriptPlugin, even if it's not included as the
      * src file in Rollup.
      * @see TypescriptPlugin.buildStart
      */
-    includeUnusedFiles: boolean;
+    includeUnusedFiles?: boolean;
 }
 
 /**
@@ -67,7 +76,9 @@ export default class TypescriptPlugin implements Plugin
         this.solutionBuilder = new SolutionBuilderPlugin( this.fileRepository, {
             // Passing in SolutionBuilderWatch details
             onBuilderStarting: this.watch.typescriptStarted.bind( this.watch ),
-            onBuilderEnded: this.watch.typescriptEnded.bind( this.watch )
+            onBuilderEnded: this.watch.typescriptEnded.bind( this.watch ),
+            compilerOptions: this.pluginOptions.compilerOptions,
+            projects: this.pluginOptions.projects
         } );
     }
 

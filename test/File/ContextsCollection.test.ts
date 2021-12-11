@@ -84,10 +84,10 @@ describe("Managing a ContextsCollection history", () =>{
                 expect( contextsCollection.getContextFromPath( path, contextPath ) ).toEqual( expectedContextPathObject );
             });
 
-            /** {@see ContextsCollection.directoryExists} */
+            /** {@see ContextsCollection.hasDirectory} */
             test( "directoryExists() exists when I ask for a files folder", () => {
-                expect( contextsCollection.directoryExists( dirname(path) ) ).toEqual( true );
-                expect( contextsCollection.directoryExists( dirname(contextPath) ) ).toEqual( true );
+                expect( contextsCollection.hasDirectory( dirname(path) ) ).toEqual( true );
+                expect( contextsCollection.hasDirectory( dirname(contextPath) ) ).toEqual( true );
             });
     });
 

@@ -189,11 +189,19 @@ export default class FileRepositoryCache
 
     //region General File search Methods
 
+    /**
+     * {@inheritDoc ContextCollection.hasFile}
+     * @param path
+     */
     public hasFile( path: string ): Boolean
     {
         return this.contextsCollection.hasFile( path );
     }
 
+    /**
+     * {@inheritDoc ContextCollection.getFile}
+     * @param path
+     */
     public getFile( path: string ): File
     {
         return this.contextsCollection.getFile( path );
@@ -238,6 +246,10 @@ export default class FileRepositoryCache
         return undefined;
     }
 
+    /**
+     * Returns the text for a context if it's of type ContextData.
+     * @param path
+     */
     public getContextText( path: string ): string | undefined
     {
         let contextPath = this.contextsCollection.getContext( path );
@@ -249,7 +261,7 @@ export default class FileRepositoryCache
      */
     public hasDirectory( path: string ): boolean
     {
-        return this.contextsCollection.directoryExists( path );
+        return this.contextsCollection.hasDirectory( path );
     }
 
     //endregion
