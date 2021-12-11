@@ -1,5 +1,10 @@
 import { Context, File } from "./Definitions";
 
+/**
+ * Keeps track of all the contexts assigned to a source path.
+ *
+ * Context paths must all be unique per source.
+ */
 export default class ContextsMap implements Iterable<Context>
 {
     public file: File;

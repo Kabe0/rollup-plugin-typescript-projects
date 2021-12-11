@@ -3,21 +3,45 @@ import { Context, ContextPathData, ContextsElement, ContextType, File } from "./
 import ContextsMap from "./ContextsMap";
 import { FileHelpers } from "./FileHelper";
 
+/**
+ * The ContextCollection handles processing new context and files within a global project scope.
+ * It can help to index directories and also remove stale contexts as changes are applied.
+ *
+ * {@see FileRepositoryCache} for more information on how to use this class.
+ */
 export default class ContextsCollection implements Iterable<ContextsElement>
 {
     /**
      * Used to address looking for directories. Does not help with requesting directories that have no registered files,
      * but I don't see that being a problem.
+     * @private
      **/
     private directoryIndex: string[] = [];
+    /**
+     * Tracks all source files in the collection.
+     * @private
+     */
     private readonly _files: File[] = [];
+    /**
+     * contextPath represents reverse mappings for direct resources such as Definitions, and Destinations
+     * @private
+     */
     private readonly contextPathMap: Map<string, ContextPathData<Context>> = new Map<string, ContextPathData<Context>>();
+    /**
+     * Provides a map for all source path contexts
+     * @private
+     */
     private readonly pathMap: Map<string, ContextsMap> = new Map<string, ContextsMap>();
 
+    /**
+     * Returns a list of the current files.
+     */
     public get files(): File[]
     {
         return this._files;
     }
+
+    //region Register Methods
 
     /**
      * Handles assigning new context's to a file.
@@ -72,7 +96,25 @@ export default class ContextsCollection implements Iterable<ContextsElement>
     }
 
     /**
-     * Used to
+     * Helps track directories inside the FileRepository. Currently, we don't support
+     * recursion through cached directories.
+     * @param path
+     * @private
+     *
+     * @see registerFile
+     * @see registerOutput
+     */
+    private registerDirectory( path: string ): void
+    {
+        if ( !this.directoryIndex.includes( path ) ) this.directoryIndex.push( path );
+    }
+
+    //endregion
+
+    // region Remove Actions
+
+    /**
+     * Used to clear out files within a project
      * @param file
      */
     public deleteByFile( file: File ): void
@@ -92,6 +134,11 @@ export default class ContextsCollection implements Iterable<ContextsElement>
         }
     }
 
+    /**
+     * Uses the file path to retrieve a file, and remove all related contexts.
+     * @param path
+     * @see deleteByFile
+     */
     public deleteByPath( path: string ): void
     {
         let file = this.pathMap.get( path )?.file;
@@ -101,21 +148,48 @@ export default class ContextsCollection implements Iterable<ContextsElement>
         this.deleteByFile( file );
     }
 
+    //endregion
+
+    //region Get Methods
+
+    /**
+     * Retrieves all contexts that match the given source path
+     * @param path
+     */
     public getContexts( path: string ): ContextsMap | undefined
     {
         return this.pathMap.get( path );
     }
 
+    /**
+     * Retrieves the relatable ContextPathData for a path as long as it's a ContextDestination, ContextDefinition, or ContextSource
+     *
+     * ContextDeclaration are not searchable here as their paths are often relative. Use {@see getContextFromPath} instead.
+     * @param contextPath
+     */
     public getContext<T extends Context>( contextPath: string ): ContextPathData<T> | undefined
     {
         return this.contextPathMap.get( contextPath ) as ContextPathData<T> | undefined;
     }
 
+    /**
+     * Returns all the contexts of a given type from the contextMap.
+     *
+     * ContextDeclarations are not available with this method. Use {@see getContextsOfTypePath} instead.
+     * @param type
+     */
     public getContextsOfType<T extends Context>( type?: ContextType ): ContextPathData<T>[]
     {
         return Array.from( this.contextPathMap.values() ).filter( contextPath => contextPath.context.type == type ) as ContextPathData<T>[];
     }
 
+    /**
+     * Retrieves the first result of a given Context type.
+     *
+     * Not recommended for ContextDeclarations as there will be more than one. Use {@see getContextsOfTypePath} instead.
+     * @param path
+     * @param type
+     */
     public getFirstContextsOfTypePath<T extends Context>( path: string, type: ContextType ): ContextPathData<T> | undefined
     {
         let results = this.pathMap.get(path);
@@ -129,6 +203,11 @@ export default class ContextsCollection implements Iterable<ContextsElement>
         }).shift();
     }
 
+    /**
+     * Provides a list of all related contexts within a given path.
+     * @param path
+     * @param type
+     */
     public getContextsOfTypePath<T extends Context>( path: string, type?: ContextType ): ContextPathData<T>[]
     {
         let results = this.pathMap.get(path);
@@ -142,11 +221,19 @@ export default class ContextsCollection implements Iterable<ContextsElement>
         });
     }
 
+    /**
+     * @see getFile
+     * @param path
+     */
     public hasFile( path: string ): boolean
     {
         return this.getFile( path ) != undefined;
     }
 
+    /**
+     * Provides the results of a path by first checking if it's a source path, or a context path.
+     * @param path
+     */
     public getFile<T extends File>( path: string )
     {
         let file: T = this.getContexts( path )?.file as T;
@@ -155,7 +242,7 @@ export default class ContextsCollection implements Iterable<ContextsElement>
     }
 
     /**
-     * Look for a specific context inside an absolute path.
+     * Look for a specific context inside the source contexts object.
      * @param path
      * @param contextPath
      */
@@ -171,29 +258,17 @@ export default class ContextsCollection implements Iterable<ContextsElement>
     }
 
     /**
-     * Helps track directories inside the FileRepository. Currently, we don't support
-     * recursion through cached directories.
-     * @param path
-     * @private
-     *
-     * @see registerFile
-     * @see registerOutput
-     */
-    private registerDirectory( path: string ): void
-    {
-        if ( !this.directoryIndex.includes( path ) ) this.directoryIndex.push( path );
-    }
-
-    /**
      * Checks if a registered directory exists.
      * @param path
      *
      * @see registerDirectory
      */
-    public directoryExists( path: string ): boolean
+    public hasDirectory( path: string ): boolean
     {
         return this.directoryIndex.includes( path );
     }
+
+    //endregion
 
     [Symbol.iterator](): Iterator<ContextsElement>
     {

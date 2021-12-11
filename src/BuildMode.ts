@@ -17,9 +17,6 @@ export default class BuildMode
     private _host!: SolutionBuilderHostBase<SemanticDiagnosticsBuilderProgram>;
     private _solutionBuilder!: SolutionBuilder<SemanticDiagnosticsBuilderProgram>;
 
-    /**
-     * Should never
-     */
     public get host(): SolutionBuilderHostBase<SemanticDiagnosticsBuilderProgram>
     {
         return this._host;
