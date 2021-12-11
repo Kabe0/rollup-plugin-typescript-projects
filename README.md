@@ -11,6 +11,7 @@ Will be pushed to NPM in the future once the project is considered stable enough
 - CWD is fixed to the folder rollup is run on.
 - includeUnusedFiles could be done per project, as of right now it's a global toggle.
   - It does not currently support a single file output. This is due to how rollup handles isolated chunks. Will need to look into this more.
+- No definition publishing controls
 
 ## How to build
 To build this project you can run `yarn install`. You may run the following yarn commands for this project
