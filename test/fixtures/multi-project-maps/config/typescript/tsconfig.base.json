@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "paths": {
+      "@test/package1/*": ["packages/package1/*"],
+      "@test/package2/*": ["packages/package2/*"],
+      //      "@test/try2/*": ["../Try2/*"]
+    }
+  }
+}

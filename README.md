@@ -6,7 +6,6 @@ Will be pushed to NPM in the future once the project is considered stable enough
 ## Current Outstanding Issues:
 - Errors are not captured gracefully.
 - Compiling Times are quite slow.
-- Configs cannot be overridden.
 - I am suspecting watches are causing colliding multiple compilations.
 - CWD is fixed to the folder rollup is run on.
 - includeUnusedFiles could be done per project, as of right now it's a global toggle.
@@ -90,6 +89,36 @@ export default {
 
 ### Typescript config
 For typescript to compile, it's important to configure the project properly, especially when loading for multiple projects.
+
+You may choose to override configs with either a global set of `compilerOptions`, 
+or you may choose to opt for a project specific config. Both configs may be used,
+but the project config will override any setting set on the main compilerOptions.
+
+The `projects` object accepts a config path (either relative or absolute) that will
+then replace the existing projects settings when loaded.
+
+```javascript
+export default {
+    input: './src/index.ts',
+    output: {
+        format: 'esm',
+        sourcemap: true,
+        file: 'bundle.js'
+    },
+    plugins: [
+        typescript({
+          compilerOptions: {
+            removeComments: true
+          },
+          projects: {
+              "./tsconfig.json": {
+                  removeComments: false
+              }
+          }
+        }),
+    ]
+}
+```
 
 #### Folder Structure
 A typical project folder structure might look like the following:
