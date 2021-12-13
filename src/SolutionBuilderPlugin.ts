@@ -1,37 +1,26 @@
 import {
     CompilerHost,
-    CompilerOptions, CreateProgram,
+    CompilerOptions,
+    CreateProgram,
     Diagnostic,
     getOutputFileNames,
     InvalidatedProject,
     InvalidatedProjectKind,
-    nodeModuleNameResolver, ProjectReference,
+    nodeModuleNameResolver,
+    ProjectReference,
     ResolvedModule,
     ResolvedProjectReference,
     SemanticDiagnosticsBuilderProgram,
     SolutionBuilderHostBase,
-    sys,
+    sys
 } from "typescript";
 
 import BuildMode from "./BuildMode";
 import FileRepositoryCache from "./File/FileRepositoryCache";
 import { ContextType, FileTypes } from "./File/Definitions";
 import { FileHelpers } from "./File/FileHelper";
+import SolutionBuilderConfigProcessor, { SolutionBuilderOptions } from "./SolutionBuilderConfigProcessor";
 
-interface SolutionBuilderOptions
-{
-    /**
-     * Triggered when SolutionBuilderPlugin starts building. Will also be called on each watch detection.
-     * @see SolutionBuilderPlugin.run
-     * @see SolutionBuilderPlugin.watch
-     */
-    onBuilderStarting?: (() => void),
-    /**
-     * Triggered when SolutionBuilderPlugin has completed building.
-     * @see SolutionBuilderPlugin.watch
-     */
-    onBuilderEnded?: (() => void)
-}
 
 /**
  * @see https://github.com/microsoft/TypeScript/blob/master/src/compiler/diagnosticMessages.json
@@ -55,9 +44,14 @@ export default class SolutionBuilderPlugin
     private _activeProject?: InvalidatedProject<any>;
 
     private readonly fileRepository: FileRepositoryCache;
-    private readonly options: SolutionBuilderOptions;
+    private readonly _options: SolutionBuilderOptions;
 
     //region Getters & Setters
+
+    public get options(): SolutionBuilderOptions
+    {
+        return this._options;
+    }
 
     public get buildMode(): BuildMode
     {
@@ -99,7 +93,7 @@ export default class SolutionBuilderPlugin
     constructor( fileRepository: FileRepositoryCache, options: SolutionBuilderOptions )
     {
         this.fileRepository = fileRepository;
-        this.options = options;
+        this._options = SolutionBuilderConfigProcessor.Process( options );
     }
 
     //region Mode Setup methods
@@ -163,6 +157,11 @@ export default class SolutionBuilderPlugin
                            configFileParsingDiagnostics?: readonly Diagnostic[],
                            projectReferences?: (readonly ProjectReference[] | undefined)): CreateProgram<SemanticDiagnosticsBuilderProgram>
     {
+        if ( this.options.compilerOptions ) options = { ...options, ...this.options.compilerOptions };
+
+        // Project configs override the compilerOptions.
+        let projectConfig = this.options.projects?.[FileHelpers.ResolveNormalize( this.activeProject.project as string )];
+        if ( projectConfig ) options = {...options, ...projectConfig };
 
         return originalProgram( rootNames, options, host, oldProgram, configFileParsingDiagnostics, projectReferences );
     }

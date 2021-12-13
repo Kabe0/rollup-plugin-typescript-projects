@@ -1,0 +1,9 @@
+{
+  "extends": "../config/typescript/tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./package1" },
+    { "path": "./package2" }
+  ]
+}

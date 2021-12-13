@@ -1,5 +1,5 @@
 import { CompilerOptions } from "typescript";
-import ContextsMap from "@plugin/File/ContextsMap";
+import ContextsMap from "./ContextsMap";
 
 export enum FileTypes
 {
