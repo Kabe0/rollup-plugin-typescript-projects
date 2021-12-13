@@ -1,8 +1,6 @@
 # rollup-typescript-plugin-projects
 Early prototype plugin Typescript References for Rollup.
 
-Will be pushed to NPM in the future once the project is considered stable enough.
-
 ## Current Outstanding Issues:
 - Errors are not captured gracefully.
 - Compiling Times are quite slow.
