@@ -1,4 +1,4 @@
-import typescript from "rollup-typescript-plugin-projects";
+import typescript from "@rollup/plugin-typescript";
 import fs from "fs";
 
 let pkg = JSON.parse(fs.readFileSync("package.json"));

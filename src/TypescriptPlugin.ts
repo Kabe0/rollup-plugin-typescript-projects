@@ -13,6 +13,7 @@ import Watch from "./Watch";
 import FileRepositoryCache from "./File/FileRepositoryCache";
 import { FileHelpers } from "./File/FileHelper";
 import { ProjectOptions } from "./SolutionBuilderConfigProcessor";
+import { ResolvedConfig } from "vite";
 
 export interface TypescriptPluginOptions
 {
@@ -50,6 +51,12 @@ export default class TypescriptPlugin implements Plugin
     private readonly fileRepository: FileRepositoryCache;
     private readonly solutionBuilder: SolutionBuilderPlugin;
     private readonly watch: Watch;
+    private _viteConfig: ResolvedConfig | undefined;
+
+    public get viteConfig(): ResolvedConfig | undefined
+    {
+        return this._viteConfig;
+    }
 
     //region Rollup Context
     private _rollupContext: PluginContext | undefined;
@@ -82,6 +89,12 @@ export default class TypescriptPlugin implements Plugin
         } );
     }
 
+    //Vite plugins
+    public configResolved( config: ResolvedConfig )
+    {
+        this._viteConfig = config;
+    }
+
     //region Rollup Plugin Methods
 
     /**
@@ -100,19 +113,21 @@ export default class TypescriptPlugin implements Plugin
         this.fileRepository.resetConsumed();
         this.solutionBuilder.run();
 
-        if ( this.pluginOptions.includeUnusedFiles ) {
-            for ( let contextPath of this.fileRepository.getContextDestinations() ) {
-                let file = contextPath.file;
-                let baseDir = file.compilerOptions.rootDir;
+        if (!this.viteConfig || this.viteConfig.command === 'build') {
+            if ( this.pluginOptions.includeUnusedFiles ) {
+                for ( let contextPath of this.fileRepository.getContextDestinations() ) {
+                    let file = contextPath.file;
+                    let baseDir = file.compilerOptions.rootDir;
 
-                //TODO Cannot handle outputting by file at the moment.
-                if ( !baseDir ) throw new Error( `TypeScript config outDir not set. Rollup does not know where to output.` );
+                    //TODO Cannot handle outputting by file at the moment.
+                    if ( !baseDir ) throw new Error( `TypeScript config outDir not set. Rollup does not know where to output.` );
 
-                this.rollupContext.emitFile( {
-                    type: 'chunk',
-                    id: relative( baseDir, contextPath.path ),
-                    preserveSignature: "allow-extension"
-                } );
+                    this.rollupContext.emitFile( {
+                        type: 'chunk',
+                        id: relative( baseDir, contextPath.path ),
+                        preserveSignature: "allow-extension"
+                    } );
+                }
             }
         }
     }
@@ -178,22 +193,24 @@ export default class TypescriptPlugin implements Plugin
      */
     public async buildEnd()
     {
-        for ( let path of this.fileRepository.getConsumedPaths() ) {
-            let contextPath = this.fileRepository.getDefinitionFromPath( path );
+        if (!this.viteConfig || this.viteConfig.command === 'build') {
+            for ( let path of this.fileRepository.getConsumedPaths() ) {
+                let contextPath = this.fileRepository.getDefinitionFromPath( path );
 
-            // Skip if no definition file found.
-            if ( !contextPath ) return;
+                // Skip if no definition file found.
+                if ( !contextPath ) return;
 
-            let baseDir = contextPath.file.compilerOptions.outDir;
+                let baseDir = contextPath.file.compilerOptions.outDir;
 
-            //TODO Cannot handle outputting by file at the moment.
-            if ( !baseDir ) throw new Error( `TypeScript config rootDir not set. Rollup does not know where to output.` );
+                //TODO Cannot handle outputting by file at the moment.
+                if ( !baseDir ) throw new Error( `TypeScript config rootDir not set. Rollup does not know where to output.` );
 
-            this.rollupContext.emitFile( {
-                type: 'asset',
-                fileName: relative( baseDir, contextPath.contextPath ),
-                source: contextPath.context.text
-            } );
+                this.rollupContext.emitFile( {
+                    type: 'asset',
+                    fileName: relative( baseDir, contextPath.contextPath ),
+                    source: contextPath.context.text
+                } );
+            }
         }
     }
 

@@ -18,6 +18,7 @@ export default function typescript( options: TypescriptPluginOptions = <Typescri
     const typescriptPlugin = new TypescriptPlugin(options);
     return <Plugin>{
         name: typescriptPlugin.name,
+        configResolved: typescriptPlugin.configResolved.bind(typescriptPlugin),
         /**
          * We have to wait till buildStart for the context to be created by rollup.
          * @param options
