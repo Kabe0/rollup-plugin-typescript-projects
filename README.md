@@ -1,4 +1,7 @@
 # rollup-typescript-plugin-projects
+<p>
+  <a href="https://www.npmjs.com/package/rollup-typescript-plugin-projects"><img src="https://img.shields.io/npm/v/rollup-typescript-plugin-projects" alt="npm package"></a>
+</p>
 Early prototype plugin Typescript References for Rollup.
 
 ## Current Outstanding Issues:
