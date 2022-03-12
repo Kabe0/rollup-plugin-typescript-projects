@@ -1,8 +1,6 @@
-import {
-    createSemanticDiagnosticsBuilderProgram, createSolutionBuilder, createSolutionBuilderHost,
-    createSolutionBuilderWithWatch,
-    createSolutionBuilderWithWatchHost, SemanticDiagnosticsBuilderProgram, SolutionBuilder, SolutionBuilderHostBase,
-    sys, WatchStatusReporter
+import typescript, {
+    SemanticDiagnosticsBuilderProgram, SolutionBuilder, SolutionBuilderHostBase,
+    WatchStatusReporter
 } from "typescript";
 
 /**
@@ -39,9 +37,9 @@ export default class BuildMode
 
     private createWatchMode( watchDiagnosticsBind?: WatchStatusReporter )
     {
-        let host = createSolutionBuilderWithWatchHost(
-            sys,
-            createSemanticDiagnosticsBuilderProgram,
+        let host = typescript.createSolutionBuilderWithWatchHost(
+            typescript.sys,
+            typescript.createSemanticDiagnosticsBuilderProgram,
             undefined,
             undefined,
             watchDiagnosticsBind                           // Used to trigger typescript updates.
@@ -50,7 +48,7 @@ export default class BuildMode
         this.generateHostHooks?.( host );
         this.host = host;
 
-        this.solutionBuilder = createSolutionBuilderWithWatch(
+        this.solutionBuilder = typescript.createSolutionBuilderWithWatch(
             host,
             [ process.cwd() ],    //TODO this needs to be a config override.
             {}
@@ -59,9 +57,9 @@ export default class BuildMode
 
     private createExecuteMode()
     {
-        let host = createSolutionBuilderHost(
-            sys,
-            createSemanticDiagnosticsBuilderProgram,
+        let host = typescript.createSolutionBuilderHost(
+            typescript.sys,
+            typescript.createSemanticDiagnosticsBuilderProgram,
             undefined,
             undefined
         );
@@ -69,7 +67,7 @@ export default class BuildMode
         this.generateHostHooks?.( host );
         this.host = host;
 
-        this.solutionBuilder = createSolutionBuilder(
+        this.solutionBuilder = typescript.createSolutionBuilder(
             host,
             [ process.cwd() ],    //TODO this needs to be a config override.
             {}

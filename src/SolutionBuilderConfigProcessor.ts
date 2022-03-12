@@ -1,4 +1,4 @@
-import { CompilerOptions, findConfigFile, sys } from "typescript";
+import typescript, { CompilerOptions } from "typescript";
 import {parse} from "path";
 import { FileHelpers } from "./File/FileHelper";
 
@@ -66,7 +66,7 @@ export default class SolutionBuilderConfigProcessor implements SolutionBuilderOp
             let projectConfig = options.projects[optionKey];
 
             let path = parse( optionKey );
-            let newOptionKey = findConfigFile( FileHelpers.ResolveNormalize(path.dir), sys.fileExists, path.base );
+            let newOptionKey = typescript.findConfigFile( FileHelpers.ResolveNormalize(path.dir), typescript.sys.fileExists, path.base );
 
             if ( newOptionKey ) {
                 options.projects[newOptionKey] = projectConfig;

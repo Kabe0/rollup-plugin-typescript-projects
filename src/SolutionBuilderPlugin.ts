@@ -1,18 +1,14 @@
-import {
+import typescript, {
     CompilerHost,
     CompilerOptions,
     CreateProgram,
     Diagnostic,
-    getOutputFileNames,
     InvalidatedProject,
-    InvalidatedProjectKind,
-    nodeModuleNameResolver,
     ProjectReference,
     ResolvedModule,
     ResolvedProjectReference,
     SemanticDiagnosticsBuilderProgram,
     SolutionBuilderHostBase,
-    sys
 } from "typescript";
 
 import BuildMode from "./BuildMode";
@@ -173,7 +169,7 @@ export default class SolutionBuilderPlugin
     private directoryExists ( path: string ): boolean
     {
         if ( this.fileRepository.hasDirectory( path ) ) return true;
-        return sys.directoryExists( path );
+        return typescript.sys.directoryExists( path );
     }
 
     /**
@@ -190,7 +186,7 @@ export default class SolutionBuilderPlugin
     {
         let list:any = [];
         for( let name of moduleNames ) {
-            let result = nodeModuleNameResolver( name, containingFile, options, this.buildMode.host, undefined, redirectedReference ).resolvedModule;
+            let result = typescript.nodeModuleNameResolver( name, containingFile, options, this.buildMode.host, undefined, redirectedReference ).resolvedModule;
             list.push( result );
 
             if ( result ) {
@@ -214,7 +210,7 @@ export default class SolutionBuilderPlugin
     {
         // See if our fileRepository is storing the temp dest file.
         if ( this.fileRepository.hasFile( file ) ) return true;
-        return sys.fileExists( file );
+        return typescript.sys.fileExists( file );
     }
 
     /**
@@ -226,7 +222,7 @@ export default class SolutionBuilderPlugin
     private readFile( path: string, encoding: string | undefined ): string | undefined
     {
         // Retrieve file text if found.
-        let text = sys.readFile( path, encoding );
+        let text = typescript.sys.readFile( path, encoding );
         if ( text ) return text;
         return this.fileRepository.getContextText( path );
     }
@@ -260,7 +256,7 @@ export default class SolutionBuilderPlugin
     private validateProjects()
     {
         while ( this.activeProject = this.buildMode.solutionBuilder.getNextInvalidatedProject() ) {
-            if ( this.activeProject.kind == InvalidatedProjectKind.Build ) {
+            if ( this.activeProject.kind == typescript.InvalidatedProjectKind.Build ) {
                 // Use the project to track files.
                 this.fileRepository.setAndResetProject( this.activeProject.project );
 
@@ -283,11 +279,11 @@ export default class SolutionBuilderPlugin
                     cacheFile = this.fileRepository.registerSource( file.fileName, file.text, cacheFile );
 
                     if ( FileHelpers.IsTypescriptFile( cacheFile ) ) {
-                        let answer = getOutputFileNames( {
+                        let answer = typescript.getOutputFileNames( {
                             options: options,
                             fileNames: [file.fileName],
                             errors: []
-                        }, file.fileName, sys.useCaseSensitiveFileNames );
+                        }, file.fileName, typescript.sys.useCaseSensitiveFileNames );
 
                         if ( answer[0] ) this.fileRepository.registerIncompleteContext( file.fileName, answer[0], { type:ContextType.Destination } );                // Javascript Files
                         if ( answer[1] ) this.fileRepository.registerIncompleteContext( file.fileName, answer[1], { type:ContextType.Definition } );                 // Definition Files

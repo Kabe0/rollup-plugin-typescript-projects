@@ -1,9 +1,10 @@
 {
   "name": "rollup-typescript-plugin-projects",
-  "version": "0.5.3",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "types/index.d.ts",
+  "version": "0.5.5",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./types/index.d.ts",
+  "type": "module",
   "author": {
     "name": "Ian Carson"
   },
@@ -46,6 +47,16 @@
     "plugin",
     "typescript",
     "es2020",
-    "references"
-  ]
+    "references",
+    "projects",
+    "vite"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "default": "./dist/plugin.mjs",
+      "types": "./types/index.d.ts"
+    }
+  }
 }

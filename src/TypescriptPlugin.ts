@@ -31,6 +31,7 @@ export interface TypescriptPluginOptions
      * @see TypescriptPlugin.buildStart
      */
     includeUnusedFiles?: boolean;
+    disableDeclarations?: boolean;
 }
 
 /**
@@ -193,7 +194,7 @@ export default class TypescriptPlugin implements Plugin
      */
     public async buildEnd()
     {
-        if (!this.viteConfig || this.viteConfig.command === 'build') {
+        if ( !this.pluginOptions.disableDeclarations && ( !this.viteConfig || this.viteConfig.command === 'build' ) ) {
             for ( let path of this.fileRepository.getConsumedPaths() ) {
                 let contextPath = this.fileRepository.getDefinitionFromPath( path );
 
