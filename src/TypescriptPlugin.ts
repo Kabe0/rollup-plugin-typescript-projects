@@ -18,6 +18,8 @@ import { ResolvedConfig } from "vite";
 export interface TypescriptPluginOptions
 {
     /**
+     * Provides a global override for the TypeScript CompilerOptions. Anything set here will override all other compiler
+     * settings.
      * {@see ProjectOptions}
      */
     compilerOptions?: ProjectOptions,
@@ -31,6 +33,10 @@ export interface TypescriptPluginOptions
      * @see TypescriptPlugin.buildStart
      */
     includeUnusedFiles?: boolean;
+    /**
+     * Can be toggled on to force .d.ts files not be generated. This is not standard multi-project build behaviour, but
+     * is often preferred when publishing projects.
+     */
     disableDeclarations?: boolean;
 }
 

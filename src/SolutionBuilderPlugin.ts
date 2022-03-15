@@ -258,6 +258,7 @@ export default class SolutionBuilderPlugin
         while ( this.activeProject = this.buildMode.solutionBuilder.getNextInvalidatedProject() ) {
             if ( this.activeProject.kind == typescript.InvalidatedProjectKind.Build ) {
                 // Use the project to track files.
+                // TODO, this is a big aggressive. It should probably use a different kind of validation process.
                 this.fileRepository.setAndResetProject( this.activeProject.project );
 
                 let files = this.activeProject.getSourceFiles();
