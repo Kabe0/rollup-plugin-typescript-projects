@@ -13,11 +13,13 @@ Early prototype plugin Typescript References for Rollup.
   - It does not currently support a single file output. This is due to how rollup handles isolated chunks. Will need to look into this more.
 
 # Install
- Using npm:
+Using npm:
 
 `npm install rollup-typescript-plugin-projects --save-dev`
 
-Using 
+Using yarn:
+
+`yarn add rollup-typescript-plugin-projects --dev`
 
 # Basic Usage
 Create a rollup.config.js configuration file and import the plugin
