@@ -49,7 +49,8 @@ export enum ContextType
     Source,
     Destination,
     Definition,
-    Declaration
+    Declaration,
+    SourceMap
 }
 
 export interface Context
@@ -75,6 +76,11 @@ export interface ContextDestination extends ContextData
 export interface ContextDefinition extends ContextData
 {
     type: ContextType.Definition;
+}
+
+export interface ContextSourceMap extends ContextData
+{
+    type: ContextType.SourceMap
 }
 /**
  * The details from this primarily come from Typescript itself.

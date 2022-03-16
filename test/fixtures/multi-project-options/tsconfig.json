@@ -9,7 +9,8 @@
     "strict": true,
     "baseUrl": "./",
     "rootDir": "./",
-    "outDir": "./build/"
+    "outDir": "./build/",
+    "sourceMap": true
   },
   "references": [
     {

@@ -5,7 +5,7 @@ import {
     ContextDefinition,
     ContextDestination,
     ContextPathData,
-    ContextSource,
+    ContextSource, ContextSourceMap,
     ContextType,
     File
 } from "./Definitions";
@@ -143,9 +143,9 @@ export default class FileRepositoryCache
      * @param contextPath
      * @param context
      */
-    public registerIncompleteContext( path: string, contextPath: string, context: Context )
+    public registerIncompleteContext( path: string, contextPath: string )
     {
-        this.contextsCollection.assign( path, contextPath, context );
+        this.contextsCollection.assign( path, contextPath, FileHelpers.RetrieveContextFromPath( contextPath ) );
     }
 
     /**
@@ -157,7 +157,7 @@ export default class FileRepositoryCache
     {
         let contextPathObject = this.contextsCollection.getContext<ContextData>( contextPath );
 
-        if ( FileHelpers.IsContextDestination( contextPathObject ) || FileHelpers.IsContextDefinition( contextPathObject ) ) {
+        if ( FileHelpers.IsContextDestination( contextPathObject ) || FileHelpers.IsContextDefinition( contextPathObject ) || FileHelpers.IsContextSourceMap( contextPathObject ) ) {
             contextPathObject.context.text = text;
         }
     }
@@ -237,6 +237,11 @@ export default class FileRepositoryCache
     public getDefinitionFromPath( path: string ): ContextPathData<ContextDefinition> | undefined
     {
         return this.contextsCollection.getFirstContextsOfTypePath<ContextDefinition>( path, ContextType.Definition );
+    }
+
+    public getSourceMapFromPath( path: string ): ContextPathData<ContextSourceMap> | undefined
+    {
+        return this.contextsCollection.getFirstContextsOfTypePath<ContextSourceMap>( path, ContextType.SourceMap );
     }
 
     public getDeclarationContext( path: string, contextPath: string ): ContextPathData<ContextDeclaration> | undefined

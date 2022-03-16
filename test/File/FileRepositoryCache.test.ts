@@ -57,11 +57,11 @@ describe.each( projects )( "Using the File Repository Cache", ( { configPath, pr
             cache.registerSource( path, file.text, file );
         }
         for ( let [ , path, contextPath, context,  ] of getContexts( GeneratorEvents.DestinationPreAdded ) ) {
-            cache.registerIncompleteContext( path, contextPath, context );
+            cache.registerIncompleteContext( path, contextPath );
         }
 
         for ( let [ , path, contextPath, context,  ] of getContexts( GeneratorEvents.DefinitionPreAdded ) ) {
-            cache.registerIncompleteContext( path, contextPath, context );
+            cache.registerIncompleteContext( path, contextPath );
         }
 
         for ( let [ , , contextPath, context,  ] of getContexts( GeneratorEvents.DestinationPostAdded ) ) {
@@ -137,14 +137,14 @@ describe.each( projects )( "Using the File Repository Cache", ( { configPath, pr
             for ( let [ , path, contextPath, context,  ] of getContexts( GeneratorEvents.DestinationPreAdded ) ) {
                 /** {@see FileRepositoryCache.registerIncompleteContext} **/
                 test( "Registering a new Destination without Data", () => {
-                    cache.registerIncompleteContext( path, contextPath, context );
+                    cache.registerIncompleteContext( path, contextPath );
                 } );
             }
 
             for ( let [ , path, contextPath, context,  ] of getContexts( GeneratorEvents.DefinitionPreAdded ) ) {
                 /** {@see FileRepositoryCache.registerIncompleteContext} **/
                 test( "Registering a new Definition without Data", () => {
-                    cache.registerIncompleteContext( path, contextPath, context );
+                    cache.registerIncompleteContext( path, contextPath );
                 } );
             }
         } );

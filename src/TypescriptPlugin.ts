@@ -2,10 +2,10 @@ import {
     ChangeEvent,
     CustomPluginOptions,
     LoadResult,
-    NormalizedInputOptions,
+    NormalizedInputOptions, NormalizedOutputOptions, OutputOptions,
     Plugin,
     PluginContext,
-    ResolveIdResult
+    ResolveIdResult, SourceDescription
 } from "rollup";
 import SolutionBuilderPlugin from "./SolutionBuilderPlugin";
 import { relative } from "path";
@@ -14,12 +14,13 @@ import FileRepositoryCache from "./File/FileRepositoryCache";
 import { FileHelpers } from "./File/FileHelper";
 import { ProjectOptions } from "./SolutionBuilderConfigProcessor";
 import { ResolvedConfig } from "vite";
+import CompilerOptionsValidator from "@plugin/CompilerOptionsValidator";
 
 export interface TypescriptPluginOptions
 {
     /**
-     * Provides a global override for the TypeScript CompilerOptions. Anything set here will override all other compiler
-     * settings.
+     * Provides a global override for the TypeScript CompilerOptions. The `projects` option will override the settings even further if specific
+     * customizations are needed for a single project.
      * {@see ProjectOptions}
      */
     compilerOptions?: ProjectOptions,
@@ -56,7 +57,7 @@ export default class TypescriptPlugin implements Plugin
     public name: string = "Typescript";
     private pluginOptions: TypescriptPluginOptions;
     private readonly fileRepository: FileRepositoryCache;
-    private readonly solutionBuilder: SolutionBuilderPlugin;
+    private solutionBuilder: SolutionBuilderPlugin;
     private readonly watch: Watch;
     private _viteConfig: ResolvedConfig | undefined;
 
@@ -114,6 +115,7 @@ export default class TypescriptPlugin implements Plugin
      */
     public buildStart( options: NormalizedInputOptions ): void
     {
+        CompilerOptionsValidator.IsInputValid( this.rollupContext, options, this.solutionBuilder.processedCompilerOptions );
         this.solutionBuilder.setMode( this.rollupContext.meta.watchMode );
 
         // Run the Typescript builder to generate file's and references
@@ -188,9 +190,14 @@ export default class TypescriptPlugin implements Plugin
         await this.watch.rollupWait();
         let destinationContent = this.fileRepository.getDestinationFromPath( id );
 
+        let sourceMap = this.fileRepository.getSourceMapFromPath( id );
+
         // We only handle output files, ignoring all other filetypes.
         if ( destinationContent ) {
-            return destinationContent?.context.text;
+            return {
+                code: destinationContent?.context.text,
+                map: sourceMap?.context.text
+            } as SourceDescription;
         }
         return undefined;
     }
@@ -219,6 +226,11 @@ export default class TypescriptPlugin implements Plugin
                 } );
             }
         }
+    }
+
+    public async renderStart( options: NormalizedOutputOptions )
+    {
+        CompilerOptionsValidator.IsOutputValid( this.rollupContext, options, this.solutionBuilder.processedCompilerOptions );
     }
 
     //endregion

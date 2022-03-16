@@ -13,7 +13,7 @@ import typescript, {
 
 import BuildMode from "./BuildMode";
 import FileRepositoryCache from "./File/FileRepositoryCache";
-import { ContextType, FileTypes } from "./File/Definitions";
+import { ContextDeclaration, ContextType, FileTypes } from "./File/Definitions";
 import { FileHelpers } from "./File/FileHelper";
 import SolutionBuilderConfigProcessor, { SolutionBuilderOptions } from "./SolutionBuilderConfigProcessor";
 
@@ -38,6 +38,7 @@ export default class SolutionBuilderPlugin
 {
     private _buildMode?: BuildMode;
     private _activeProject?: InvalidatedProject<any>;
+    private _compilerOptions: Map<string,CompilerOptions> = new Map<string, CompilerOptions>();
 
     private readonly fileRepository: FileRepositoryCache;
     private readonly _options: SolutionBuilderOptions;
@@ -49,13 +50,18 @@ export default class SolutionBuilderPlugin
         return this._options;
     }
 
+    public get processedCompilerOptions()
+    {
+        return this._compilerOptions;
+    }
+
     public get buildMode(): BuildMode
     {
         if ( !this._buildMode ) throw new Error("No BuildMode set. Make sure setMode() is called first before calling.");
         return this._buildMode;
     }
 
-    private set buildMode( value: BuildMode )
+    public set buildMode( value: BuildMode )
     {
         this._buildMode = value;
     }
@@ -66,7 +72,7 @@ export default class SolutionBuilderPlugin
         return this._activeProject;
     }
 
-    private set activeProject( value: InvalidatedProject<any> | undefined )
+    public set activeProject( value: InvalidatedProject<any> | undefined )
     {
         this._activeProject = value;
     }
@@ -155,9 +161,12 @@ export default class SolutionBuilderPlugin
     {
         if ( this.options.compilerOptions ) options = { ...options, ...this.options.compilerOptions };
 
+        let path = FileHelpers.ResolveNormalize( this.activeProject.project as string );
         // Project configs override the compilerOptions.
-        let projectConfig = this.options.projects?.[FileHelpers.ResolveNormalize( this.activeProject.project as string )];
+        let projectConfig = this.options.projects?.[path];
         if ( projectConfig ) options = {...options, ...projectConfig };
+        // Cache for retrieval later.
+        this._compilerOptions.set(path, options ?? {});
 
         return originalProgram( rootNames, options, host, oldProgram, configFileParsingDiagnostics, projectReferences );
     }
@@ -196,7 +205,7 @@ export default class SolutionBuilderPlugin
                     extension: result?.extension,
                     packageId: result.packageId,
                     external: result.isExternalLibraryImport
-                })
+                } as ContextDeclaration )
             }
         }
         return list;
@@ -286,8 +295,9 @@ export default class SolutionBuilderPlugin
                             errors: []
                         }, file.fileName, typescript.sys.useCaseSensitiveFileNames );
 
-                        if ( answer[0] ) this.fileRepository.registerIncompleteContext( file.fileName, answer[0], { type:ContextType.Destination } );                // Javascript Files
-                        if ( answer[1] ) this.fileRepository.registerIncompleteContext( file.fileName, answer[1], { type:ContextType.Definition } );                 // Definition Files
+                        for( let path of answer ) {
+                            this.fileRepository.registerIncompleteContext( file.fileName, path );
+                        }
                     }
                 }
             }

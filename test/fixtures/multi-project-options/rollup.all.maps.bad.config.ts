@@ -1,5 +1,8 @@
 import typescript from "@plugin/index";
 
+/**
+ * Tests if project overrides work for overriding specific project settings.
+ */
 export default {
     input: './src/index.ts',
     preserveModules: true,
@@ -7,13 +10,8 @@ export default {
         typescript({
             includeUnusedFiles: true,
             compilerOptions: {
-                removeComments: false
+                sourceMap: false,
             },
-            projects: {
-                "./tsconfig.json": {
-                    removeComments: true
-                }
-            }
         }),
         // css({output: "vendor.css"}),
         // commonjs(),

@@ -31,6 +31,7 @@ export default function typescript( options: TypescriptPluginOptions = <Typescri
         resolveId: typescriptPlugin.resolveId.bind(typescriptPlugin),
         load: typescriptPlugin.load.bind(typescriptPlugin),
         buildEnd: typescriptPlugin.buildEnd.bind(typescriptPlugin),
-        watchChange: typescriptPlugin.watchChange.bind(typescriptPlugin)
+        watchChange: typescriptPlugin.watchChange.bind(typescriptPlugin),
+        renderStart: typescriptPlugin.renderStart.bind(typescriptPlugin)
     };
 }

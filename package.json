@@ -1,6 +1,6 @@
 {
   "name": "rollup-typescript-plugin-projects",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./types/index.d.ts",
@@ -15,8 +15,8 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c --watch",
+    "build": "rollup -c rollup.confg.mjs",
+    "watch": "rollup -c rollup.confg.mjs --watch",
     "test": "jest",
     "test-coverage": "jest --coverage"
   },

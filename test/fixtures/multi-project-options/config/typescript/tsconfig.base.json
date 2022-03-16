@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "noEmit": false,
+    "sourceMap": true,
     "paths": {
       "@test/package1/*": ["packages/package1/*"],
       "@test/package2/*": ["packages/package2/*"],

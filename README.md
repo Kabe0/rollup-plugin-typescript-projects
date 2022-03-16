@@ -59,8 +59,8 @@ export default {
 Type: `CompilerOptions` <br/>
 Default: `null`
 
-Provides a global override for the TypeScript CompilerOptions. Anything set here will override all other compiler
-settings.
+Provides a global override for the TypeScript CompilerOptions. The `projects` option will override the settings even further if specific
+customizations are needed for a single project.
 
 ### projects
 Type: `[key: string]: CompilerOptions` <br/>

@@ -29,10 +29,10 @@ export default class FileRepositoryCacheTest extends FileRepositoryCache
         super.registerDeclaration( path, contextPath, context );
     }
 
-    registerIncompleteContext( path: string, contextPath: string, context: Context )
+    registerIncompleteContext( path: string, contextPath: string )
     {
         this.contextCounter++;
-        super.registerIncompleteContext( path, contextPath, context );
+        super.registerIncompleteContext( path, contextPath );
     }
 
     registerTextWithContextPath( contextPath: string, text: string )

@@ -1,7 +1,7 @@
 import { posix, resolve, win32 } from "path";
 import {
     Context, ContextData, ContextDeclaration, ContextDefinition, ContextDestination,
-    ContextPathData, ContextSource, ContextType,
+    ContextPathData, ContextSource, ContextSourceMap, ContextType,
     File,
     FileTypes,
     ReadOnlyTypescriptDefinitionsFile,
@@ -19,6 +19,15 @@ export class FileHelpers
      * @private
      */
     private static CachedResolved: Map<string, string> = new Map<string, string>();
+
+    //region stringMethods
+    public static RetrieveContextFromPath( path:string ): Context
+    {
+        if ( path.endsWith(".js") ) return { type:ContextType.Destination }
+        if ( path.endsWith(".js.map") ) return { type:ContextType.SourceMap }
+        if ( path.endsWith(".d.ts") ) return { type:ContextType.Definition }
+        throw Error(`Unreconginized path ${path}`);
+    }
 
     //region File Methods
 
@@ -67,6 +76,14 @@ export class FileHelpers
     {
         if ( context?.context ) return context.context.type == ContextType.Definition;
         return context?.type == ContextType.Definition;
+    }
+
+    public static IsContextSourceMap( context?: ContextPathData<Context> ): context is ContextPathData<ContextSourceMap>
+    public static IsContextSourceMap( context?: Context ): context is ContextDefinition
+    public static IsContextSourceMap( context?: any ): context is ContextDefinition
+    {
+        if ( context?.context ) return context.context.type == ContextType.SourceMap;
+        return context?.type == ContextType.SourceMap;
     }
 
     public static IsContextSource( context?: ContextPathData<Context> ): context is ContextPathData<ContextSource>
